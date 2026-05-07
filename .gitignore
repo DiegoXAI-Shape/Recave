@@ -1,0 +1,34 @@
+# ============================
+# Ignorar Entornos Virtuales
+# ============================
+myenv/
+env/
+venv/
+.venv/
+
+# ============================
+# Seguridad y Credenciales
+# ============================
+.env
+# ¡NUNCA subas el archivo .env a GitHub! Contiene contraseñas reales.
+
+# ============================
+# Datos Sensibles y Archivos Excel
+# ============================
+*.xlsx
+*.xls
+*.csv
+# Evitamos subir los reportes de RECAVE o resultados limpios por privacidad de datos.
+
+# ============================
+# Archivos de Caché de Python
+# ============================
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# ============================
+# Scripts de prueba temporales
+# ============================
+test_encrypt.py
