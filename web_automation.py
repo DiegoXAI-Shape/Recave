@@ -113,11 +113,11 @@ def run_web_automation(archivo_a_subir):
             # ==========================================
             print("Buscando botón de Cargar...")
             # IMPORTANTE: Solo movemos el ratón, NO damos clic para no causar problemas.
-            esperar_y_hacer_clic("images/cargar.png")
+            esperar_y_hacer_clic("images/cargar.png", mover_solo=False)
             print("Ratón en posición sobre Cargar. Esperando 6 minutos por seguridad...")
             
-            # Esperamos 6 minutos (360 segundos)
-            time.sleep(360)
+            # Esperamos 7 minutos (420 segundos)
+            time.sleep(2 * 60)
             print("Tiempo de espera finalizado.")
 
             # ==========================================

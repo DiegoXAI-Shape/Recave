@@ -12,7 +12,7 @@ def main():
         sheet_name=config.EXCEL_SHEET,
         output_file=config.EXCEL_CLEAN
     )
-    
+
     print("\n" + "="*60)
     print("2. INICIANDO AUTOMATIZACIÓN WEB...")
     print("="*60)
