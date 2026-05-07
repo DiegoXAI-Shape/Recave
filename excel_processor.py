@@ -5,6 +5,7 @@ import sys
 import tempfile
 import os
 import shutil
+import datetime
 
 def process_excel(password, origin_file, sheet_name, output_file):
     if not password:
@@ -83,7 +84,7 @@ def process_excel(password, origin_file, sheet_name, output_file):
         "FechaInicio" : None,
         "Tipo de Credito" : "TDC",
         "VEN_SALCRE" : None,
-        "VEN_CANOTO" : df_origen["Nº Credito"].map(dic_vlookup).fillna(""),
+        "VEN_CANOTO" : df_origen["Nº Credito"].map(dic_vlookup).fillna(0),
         "Telefono" : df_origen["Tel Fav"],
         "Tel Casa" : df_origen["Tel Casa"],
         "Tel Oficina" : df_origen["Tel Oficina"],
@@ -99,49 +100,38 @@ def process_excel(password, origin_file, sheet_name, output_file):
 
     df_nuevo = pd.DataFrame(columnas_diccionario)
 
-    # 1. Quitar '0' sueltos en columnas de teléfono
+    # 1. Quitar secuencias completas de ceros (ej: '0000') dejándolos como '0' solamente
     columnas_telefonos = ["Telefono", "Tel Casa", "Tel Oficina", "Tel1", "Tel2", "Tel3", "Tel4", "Tel5", "Tel6", "Tel7", "Tel8"]
     for col in columnas_telefonos:
         if col in df_nuevo.columns:
-            df_nuevo[col] = df_nuevo[col].replace("0", "")
+            # Reemplaza valores que sean puros ceros por un solo "0"
+            df_nuevo[col] = df_nuevo[col].astype(str).replace(r'^0+$', '0', regex=True)
+            # Limpiar nan de texto por si acaso
+            df_nuevo[col] = df_nuevo[col].replace('nan', '')
 
     # 2. Convertimos el dinero y saldos a número
     columnas_dinero = [
-        "Capital", "Responsa", "ADEUDO TOTAL", "Saldos Vdos"
+        "Capital", "Responsa", "ADEUDO TOTAL", "Saldos Vdos", "VEN_CANOTO"
     ]
     for col in columnas_dinero:
         if col in df_nuevo.columns:
-            df_nuevo[col] = pd.to_numeric(df_nuevo[col], errors='coerce')
+            df_nuevo[col] = pd.to_numeric(df_nuevo[col], errors='coerce').fillna(0)
 
-    print(f"Insertando hoja 'Prueba' en el archivo original: {origin_file}...")
-    with pd.ExcelWriter(temp_path, engine='openpyxl', mode='a', if_sheet_exists='replace') as writer:
-        df_nuevo.to_excel(writer, index=False, sheet_name="Prueba")
-
-    print(f"Re-encriptando el archivo original: {origin_file}...")
-    import win32com.client as win32
-    excel = None
-    try:
-        excel = win32.DispatchEx("Excel.Application")
-        excel.Visible = False
-        excel.DisplayAlerts = False
-        
-        abs_temp_path = os.path.abspath(temp_path)
-        abs_origin_path = os.path.abspath(origin_file)
-        
-        wb = excel.Workbooks.Open(abs_temp_path)
-        # FileFormat=51 es xlOpenXMLWorkbook (.xlsx)
-        wb.SaveAs(abs_origin_path, FileFormat=51, Password=password)
-        wb.Close(SaveChanges=False)
-        print(f"EXITO: ¡Hoja 'Prueba' agregada y archivo '{origin_file}' protegido con contraseña exitosamente!")
-    except Exception as e:
-        print(f"ADVERTENCIA: No se pudo encriptar el archivo. Detalle: {e}")
-        shutil.move(temp_path, origin_file)
-    finally:
-        if excel:
-            excel.Quit()
-        # Limpiar temporal si aún existe
-        if os.path.exists(temp_path):
-            try:
-                os.remove(temp_path)
-            except:
-                pass
+    print(f"Exportando los datos directamente a CSV...")
+    mes_dia = datetime.datetime.now().strftime("%m %d")
+    csv_filename = f"CARGA MC COLLECT B1 {mes_dia}.csv"
+    csv_path = os.path.abspath(csv_filename)
+    
+    # Exportar a CSV con encoding utf-8-sig para perfecta compatibilidad con Excel/Web
+    df_nuevo.to_csv(csv_path, index=False, encoding='utf-8-sig')
+    
+    print(f"EXITO: ¡Archivo CSV generado correctamente como '{csv_filename}'!")
+    
+    # Limpiar temporal si aún existe
+    if os.path.exists(temp_path):
+        try:
+            os.remove(temp_path)
+        except:
+            pass
+            
+    return csv_path

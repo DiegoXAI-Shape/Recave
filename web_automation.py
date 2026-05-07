@@ -4,9 +4,9 @@ import time
 import undetected_chromedriver as uc
 import os
 from selenium.webdriver.common.by import By
-from config import USUARIO_WEB, PASSWORD_WEB, URL_DESTINO, EXCEL_ORIGIN
+from config import USUARIO_WEB, PASSWORD_WEB, URL_DESTINO
 
-def run_web_automation():
+def run_web_automation(archivo_a_subir):
     print("Iniciando el navegador web...")
 
     opciones = uc.ChromeOptions()
@@ -87,8 +87,8 @@ def run_web_automation():
             # ==========================================
             # 2. SUBIR ARCHIVO CON SELENIUM
             # ==========================================
-            print("Iniciando la carga del archivo de Excel (Selenium)...")
-            ruta_archivo = os.path.abspath(EXCEL_ORIGIN)
+            print(f"Iniciando la carga del archivo {os.path.basename(archivo_a_subir)} (Selenium)...")
+            ruta_archivo = os.path.abspath(archivo_a_subir)
             time.sleep(2) # Pausa técnica para DOM
             
             input_archivo = driver.find_element(By.ID, "ctl00_CPHMaster_AsyncFileUpload1_ctl02")
@@ -117,7 +117,7 @@ def run_web_automation():
             print("Ratón en posición sobre Cargar. Esperando 6 minutos por seguridad...")
             
             # Esperamos 6 minutos (360 segundos)
-            time.sleep(1)
+            time.sleep(15)
             print("Tiempo de espera finalizado.")
 
             # ==========================================
