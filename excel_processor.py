@@ -108,6 +108,8 @@ def process_excel(password, origin_file, sheet_name, output_file):
             df_nuevo[col] = df_nuevo[col].astype(str).replace(r'^0+$', '0', regex=True)
             # Limpiar nan de texto por si acaso
             df_nuevo[col] = df_nuevo[col].replace('nan', '')
+            # Quitar espacios intermedios (ej: "81 1234 5678" -> "8112345678")
+            df_nuevo[col] = df_nuevo[col].str.replace(' ', '', regex=False)
 
     # 2. Convertimos el dinero y saldos a número
     columnas_dinero = [

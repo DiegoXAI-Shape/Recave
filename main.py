@@ -12,11 +12,12 @@ def main():
         sheet_name=config.EXCEL_SHEET,
         output_file=config.EXCEL_CLEAN
     )
-    
+
     print("\n" + "="*60)
     print("2. INICIANDO AUTOMATIZACIÓN WEB...")
     print("="*60)
     run_web_automation(csv_file)
+
 
 if __name__ == "__main__":
     main()
