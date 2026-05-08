@@ -32,7 +32,7 @@ def process_excel(password, origin_file, sheet_name, output_file):
         shutil.copy(origin_file, temp_path)
 
     # Leer las dos hojas usando Pandas desde el archivo temporal desencriptado
-    df_origen = pd.read_excel(temp_path, sheet_name=sheet_name, dtype=str)
+    df_origen = pd.read_excel(temp_path, sheet_name=sheet_name, dtype=str, skiprows=2)
     
     print("Mapeando hoja 'Nombre de la Hoja' internamente para el BUSCARV...")
     df_recave = pd.read_excel(temp_path, sheet_name="Nombre de la Hoja", dtype=str)
