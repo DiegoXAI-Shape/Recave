@@ -1,22 +1,55 @@
+"""
+config.py
+=========
+Carga y valida toda la configuracion del proyecto Recave desde variables
+de entorno (archivo .env). Si alguna variable critica no esta definida,
+el programa falla inmediatamente con un mensaje claro.
+"""
 import os
 from dotenv import load_dotenv
+from exceptions import ConfigError
 
 # Cargar las variables de entorno desde el archivo .env
 load_dotenv()
 
+
+def _require_env(key: str) -> str:
+    """
+    Obtiene una variable de entorno y lanza ConfigError si no existe.
+
+    Args:
+        key: Nombre de la variable de entorno.
+
+    Returns:
+        El valor de la variable.
+
+    Raises:
+        ConfigError: Si la variable no esta definida o esta vacia.
+    """
+    value = os.getenv(key)
+    if not value:
+        raise ConfigError(
+            f"Falta la variable de entorno obligatoria: '{key}'. "
+            "Asegurate de tener tu archivo .env configurado correctamente."
+        )
+    return value
+
+
 # ==============================================================================
-# CONFIGURACIONES GENERALES
+# CREDENCIALES (obligatorias — el programa falla si no estan en .env)
 # ==============================================================================
+EXCEL_PASSWORD: str = _require_env("excel_password")
+USUARIO_WEB: str    = _require_env("user")
+PASSWORD_WEB: str   = _require_env("pwd")
 
-# 1. Contraseña del archivo Excel encriptado (viene de tu archivo .env)
-EXCEL_PASSWORD = os.getenv("excel_password")
-USUARIO_WEB = os.getenv("user")
-PASSWORD_WEB = os.getenv("pwd")
+# ==============================================================================
+# ARCHIVOS
+# ==============================================================================
+EXCEL_ORIGIN: str = "NOMBRE_DEL_ARCHIVO.xlsx"  # Archivo original
+EXCEL_SHEET: str  = "Nombre de la Hoja"                      # Pestana a leer
+EXCEL_CLEAN: str  = "resultado_limpio.xlsx"                  # Archivo de salida (ya no usado)
 
-# 2. Configuración de archivos
-EXCEL_ORIGIN = "NOMBRE_DEL_ARCHIVO.xlsx"  # Nombre del archivo original
-EXCEL_SHEET = "Nombre de la Hoja"                     # Nombre de la pestaña a leer
-EXCEL_CLEAN = "resultado_limpio.xlsx"                 # Nombre del archivo final a guardar
-
-# 3. Configuración Web
-URL_DESTINO = "https://TU_PORTAL_WEB/ruta/LogIn.aspx"                # URL de la página web a automatizar
+# ==============================================================================
+# WEB
+# ==============================================================================
+URL_DESTINO: str = "https://TU_PORTAL_WEB/ruta/LogIn.aspx"

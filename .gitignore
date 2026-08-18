@@ -10,7 +10,6 @@ venv/
 # Seguridad y Credenciales
 # ============================
 .env
-# ¡NUNCA subas el archivo .env a GitHub! Contiene contraseñas reales.
 
 # ============================
 # Datos Sensibles y Archivos Excel
@@ -18,10 +17,21 @@ venv/
 *.xlsx
 *.xls
 *.csv
-# Evitamos subir los reportes de RECAVE o resultados limpios por privacidad de datos.
 
 # ============================
-# Archivos de Caché de Python
+# Archivos de Log generados
+# ============================
+logs/
+*.log
+
+# ============================
+# Archivos generados por el bot
+# ============================
+CARGA MC COLLECT*.csv
+resultado_limpio.xlsx
+
+# ============================
+# Archivos de Cache de Python
 # ============================
 __pycache__/
 *.py[cod]
@@ -32,3 +42,5 @@ __pycache__/
 # Scripts de prueba temporales
 # ============================
 test_encrypt.py
+scratch_columns.py
+.agents
